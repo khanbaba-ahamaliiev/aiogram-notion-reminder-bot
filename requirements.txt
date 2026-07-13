@@ -1,0 +1,4 @@
+aiogram==3.29.1
+aiosqlite==0.22.1
+apscheduler==3.11.3
+python-dotenv==1.2.2
