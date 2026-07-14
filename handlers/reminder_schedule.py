@@ -1,9 +1,10 @@
 from datetime import datetime
+import zoneinfo
 
 from aiogram import Bot
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
 
-from database.handlers_db import get_all_pending_reminders, mark_reminder_sent
+from database.handlers_db import get_all_pending_reminders, mark_reminder_sent, get_user_timezone
 from keyboards import accept_reminder_kb
 
 scheduler = AsyncIOScheduler()
@@ -24,7 +25,8 @@ async def send_reminder(bot: Bot, user_id: int, reminder_id: int, text: str):
 
 def schedule_reminder(bot: Bot, reminder_id: int, user_id: int, text: str, trigger_datetime: datetime):
 
-    if trigger_datetime <= datetime.now():
+    tz = trigger_datetime.tzinfo if trigger_datetime.tzinfo else zoneinfo.ZoneInfo("UTC")
+    if trigger_datetime <= datetime.now(tz):
         return
 
     job_id = f"reminder_{reminder_id}"
@@ -58,8 +60,20 @@ async def load_reminders_from_db(bot: Bot):
     for reminder_id, user_id, text, trigger_datetime_str, _ in pending:
         try:
             trigger_datetime = datetime.fromisoformat(trigger_datetime_str)
-            schedule_reminder(bot, reminder_id, user_id, text, trigger_datetime)
-            count += 1
+            if trigger_datetime.tzinfo is not None:
+                now_compare = datetime.now(trigger_datetime.tzinfo)
+            else:
+                user_tz_str = await get_user_timezone(user_id)
+                tz = zoneinfo.ZoneInfo(user_tz_str) if user_tz_str else zoneinfo.ZoneInfo("UTC")
+                trigger_datetime = trigger_datetime.replace(tzinfo=tz)
+                now_compare = datetime.now(tz)
+
+            if trigger_datetime <= now_compare:
+                print(f"Напоминание {reminder_id} уже просрочено. Отправляем пользователю {user_id} сразу.")
+                await send_reminder(bot, user_id, reminder_id, text)
+            else:
+                schedule_reminder(bot, reminder_id, user_id, text, trigger_datetime)
+                count += 1
         except Exception as e:
             print(f"Ошибка при загрузке напоминания {reminder_id}: {e}")
     print(f"Загружено {count} напоминаний из БД")

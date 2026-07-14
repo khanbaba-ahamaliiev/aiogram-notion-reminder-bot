@@ -33,10 +33,10 @@ Users added to the `ADMIN_IDS` configuration can access a comprehensive control 
 
 ## Technology Stack
 
-* **Language**: Python 3.14+
-* **Framework**: [Aiogram 3](https://github.com/aiogram/aiogram) (Asynchronous Telegram Bot API wrapper)
-* **Database**: SQLite (via [Aiosqlite](https://github.com/omnilib/aiosqlite) for asynchronous database operations)
-* **Task Scheduler**: [APScheduler](https://github.com/agronholm/apscheduler) (Asynchronous job executor for reminder scheduling)
+* **Language**: Python 3.14
+* **Framework**: [Aiogram 3] (Asynchronous Telegram Bot API wrapper)
+* **Database**: SQLite (via [Aiosqlite] for asynchronous database operations)
+* **Task Scheduler**: [APScheduler] (Asynchronous job executor for reminder scheduling)
 * **Configuration**: Python-Dotenv (Management of sensitive credentials)
 
 ---
@@ -129,7 +129,7 @@ Telegram_notion_bot/
 
 ## Author & Support
 
-Developed by **Agamaliev Khanbaba**.
+Developed by **Ahamaliiev Khanbaba**.
 * Telegram: [@Xantk](https://t.me/Xantk)
 
 If you have any questions, encounter issues, or want to showcase this in your portfolio, feel free to contact the author!

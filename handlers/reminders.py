@@ -1,5 +1,6 @@
 import asyncio
 from datetime import datetime
+import zoneinfo
 from aiogram import Router, F, Bot
 from aiogram.filters import StateFilter
 from aiogram.fsm.context import FSMContext
@@ -11,6 +12,7 @@ from database.handlers_db import (
     get_user_reminders,
     get_user_reminder,
     delete_reminder_db,
+    get_user_timezone,
 )
 from handlers.reminder_schedule import schedule_reminder, cancel_scheduled_reminder
 from handlers.notes import NoteState
@@ -74,9 +76,13 @@ async def save_reminder_with_datetime(message: Message, state: FSMContext, bot: 
     reminder_text = data.get("note")
 
     try:
-        trigger_datetime = datetime.strptime(message.text.strip(), "%d.%m.%Y %H:%M")
+        user_timezone = await get_user_timezone(message.from_user.id)
+        tz = zoneinfo.ZoneInfo(user_timezone) if user_timezone else zoneinfo.ZoneInfo("UTC")
 
-        if trigger_datetime <= datetime.now():
+        naive_dt = datetime.strptime(message.text.strip(), "%d.%m.%Y %H:%M")
+        trigger_datetime = naive_dt.replace(tzinfo=tz)
+
+        if trigger_datetime <= datetime.now(tz):
             await message.answer(
                 "Не правильная дата или время.\n"
                 "Дата и время должны быть в будущем!\n"
