@@ -59,7 +59,7 @@ Ensure you have Python 3.10+ installed on your system.
 
 ### 2. Clone the Repository
 ```bash
-git clone https://github.com/your-username/Telegram_notion_bot.git
+git clone https://github.com/khanbaba-ahamaliiev/Notion-Reminder-bot.git
 cd Telegram_notion_bot
 ```
 
